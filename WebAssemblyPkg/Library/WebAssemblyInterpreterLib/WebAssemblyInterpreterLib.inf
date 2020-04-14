@@ -1,0 +1,133 @@
+## @file
+#  WebAssemblyInterpreterLib produces web assembly (wasm) interpretation algorithm.
+#
+#  It is based on github project:
+#  WAMR was released on the website https://github.com/bytecodealliance/wasm-micro-runtime.
+#
+#  Copyright (c) 2020, Intel Corporation. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = WebAssemblyInterpreterLib
+  FILE_GUID                      = 69EC7DB2-B0DD-493A-963A-C5F330131BBB
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = WebAssemblyInterpreterLib
+  DEFINE CORE_ROOT               = wasm-micro-runtime/core
+  DEFINE IWASM_ROOT              = wasm-micro-runtime/core/iwasm
+  DEFINE SHARED_ROOT             = wasm-micro-runtime/core/shared
+  DEFINE X64_BUILD_FLAGS         = -DBH_MALLOC=wasm_runtime_malloc -DBH_FREE=wasm_runtime_free -DBUILD_TARGET_X86_64 -DWASM_ENABLE_INTERP=1 -DWASM_ENABLE_LIBC_BUILTIN=1
+  DEFINE IA32_BUILD_FLAGS        = -DBH_MALLOC=wasm_runtime_malloc -DBH_FREE=wasm_runtime_free -DBUILD_TARGET_X86_32 -DWASM_ENABLE_INTERP=1 -DWASM_ENABLE_LIBC_BUILTIN=1
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64
+#
+
+[Sources]
+  wasm-micro-runtime/core/config.h
+  wasm-micro-runtime/core/iwasm/include/aot_export.h 
+  wasm-micro-runtime/core/iwasm/include/lib_export.h
+  wasm-micro-runtime/core/iwasm/include/wasm_export.h
+  wasm-micro-runtime/core/iwasm/common/wasm_exec_env.h 
+  wasm-micro-runtime/core/iwasm/common/wasm_memory.h
+  wasm-micro-runtime/core/iwasm/common/wasm_native.h
+  wasm-micro-runtime/core/iwasm/common/wasm_runtime_common.h
+  wasm-micro-runtime/core/shared/platform/include/platform_api_extension.h 
+  wasm-micro-runtime/core/shared/platform/include/platform_api_vmcore.h 
+  wasm-micro-runtime/core/shared/platform/include/platform_common.h
+  wasm-micro-runtime/core/shared/utils/bh_assert.h
+  wasm-micro-runtime/core/shared/utils/bh_common.h 
+  wasm-micro-runtime/core/shared/utils/bh_hashmap.h 
+  wasm-micro-runtime/core/shared/utils/bh_list.h
+  wasm-micro-runtime/core/shared/utils/bh_log.h
+  wasm-micro-runtime/core/shared/utils/bh_platform.h
+  wasm-micro-runtime/core/shared/utils/bh_queue.h
+  wasm-micro-runtime/core/shared/utils/bh_vector.h
+  wasm-micro-runtime/core/shared/utils/runtime_timer.h
+  wasm-micro-runtime/core/shared/utils/uncommon/bh_read_file.h
+  wasm-micro-runtime/core/shared/mem-alloc/mem_alloc.h
+  wasm-micro-runtime/core/shared/platform/uefi/platform_internal.h
+  wasm-micro-runtime/core/iwasm/interpreter/wasm.h
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_interp.h
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_loader.h
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_opcode.h
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_runtime.h
+  wasm-micro-runtime/core/shared/platform/uefi/uefi_platform.c
+  #wasm-micro-runtime/core/shared/platform/common/math/math.c 
+  wasm-micro-runtime/core/shared/mem-alloc/mem_alloc.c 
+  wasm-micro-runtime/core/shared/mem-alloc/ems/ems_kfc.c 
+  wasm-micro-runtime/core/shared/mem-alloc/ems/ems_alloc.c 
+  wasm-micro-runtime/core/shared/mem-alloc/ems/ems_hmu.c 
+  wasm-micro-runtime/core/shared/utils/bh_assert.c 
+  wasm-micro-runtime/core/shared/utils/bh_common.c 
+  wasm-micro-runtime/core/shared/utils/bh_hashmap.c
+  wasm-micro-runtime/core/shared/utils/bh_list.c
+  wasm-micro-runtime/core/shared/utils/bh_log.c 
+  wasm-micro-runtime/core/shared/utils/bh_queue.c
+  wasm-micro-runtime/core/shared/utils/bh_vector.c
+  wasm-micro-runtime/core/iwasm/libraries/libc-builtin/libc_builtin_wrapper.c
+  wasm-micro-runtime/core/iwasm/common/wasm_runtime_common.c
+  wasm-micro-runtime/core/iwasm/common/wasm_native.c
+  wasm-micro-runtime/core/iwasm/common/wasm_exec_env.c
+  wasm-micro-runtime/core/iwasm/common/wasm_memory.c
+  # main entrance
+  WebAssemblyInterpreterLib.c
+  # wasm interpreter
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_interp_classic.c
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_loader.c
+  wasm-micro-runtime/core/iwasm/interpreter/wasm_runtime.c
+
+  wasm-micro-runtime/core/iwasm/common/arch/invokeNative_general.c | MSFT
+
+[Sources.Ia32]
+  wasm-micro-runtime/core/iwasm/common/arch/invokeNative_ia32.s | GCC
+
+[Sources.X64]
+  wasm-micro-runtime/core/iwasm/common/arch/invokeNative_em64.s | GCC
+
+[Packages]
+  MdePkg/MdePkg.dec
+  WebAssemblyPkg/WebAssemblyPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  BaseMemoryLib
+  MemoryAllocationLib
+  UefiBootServicesTableLib
+  UefiLib
+  PrintLib
+  FileHandleLib
+  DevicePathLib
+  IntrinsicLib
+  
+[BuildOptions]
+  *_*_IA32_CC_FLAGS      = $(IA32_BUILD_FLAGS)
+  *_*_X64_CC_FLAGS       = $(X64_BUILD_FLAGS)
+  GCC:*_*_X64_CC_FLAGS   = -DNO_MSABI_VA_FUNCS
+
+  # warning C4152: nonstandard extension, function/data pointer conversion in expression
+  # warning C4028: formal parameter 1 different from declaration
+  # warning C4456: declaration of 'buf' hides previous local declaration
+  # warning C4146: unary minus operator applied to unsigned type, result still unsigned
+  # warning C4244: 'initializing': conversion from '__int64' to 'uint32', possible loss of data
+  # warning C4098: 'free_wrapper': 'void' function returning a value
+  # warning C4055: 'type cast': from data pointer 'void *' to function pointer 'bh_msg_cleaner'
+  # warning C4018: '>': signed/unsigned mismatch
+  # warning C4706: assignment within conditional expression
+  # warning C4305: 'type cast': truncation from 'uintptr_t' to 'char *'
+  # warning C4754: Conversion rules for arithmetic operations in the comparison at c:\home\edkii\edk2\webassemblypkg\library\webassemblyinterpreterlib\core\iwasm\interpreter\wasm_loader.c(428) mean that one branch cannot be executed. Cast '(param_count + ...)' to 'ULONG64' (or similar type of 8 bytes).
+  # warning C4293: '>>': shift count negative or too big, undefined behavior
+  # warning C4310: cast truncates constant value
+  MSFT:*_*_*_CC_FLAGS    = /wd4152 /wd4028 /wd4456 /wd4146 /wd4244 /wd4098 /wd4055 /wd4018 /wd4706 /wd4305 /wd4754 /wd4293 /wd4310 /GL- /Od
+  GCC:*_*_IA32_CC_FLAGS  = -O0 -Wno-error=maybe-uninitialized -Wno-error=unused-but-set-variable
+  GCC:*_*_X64_CC_FLAGS   = -O0 -Wno-error=maybe-uninitialized -Wno-error=format -Wno-format -Wno-error=unused-but-set-variable
+
+
