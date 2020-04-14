@@ -1,0 +1,3 @@
+[submodule "WebAssemblyPkg/Library/WebAssemblyInterpreterLib/wasm-micro-runtime"]
+	path = WebAssemblyPkg/Library/WebAssemblyInterpreterLib/wasm-micro-runtime
+	url = git@github.com:jyao1/wasm-micro-runtime.git
