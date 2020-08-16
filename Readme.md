@@ -6,6 +6,17 @@
 This package is a wrapper for [wasm-micro-runtime](https://github.com/bytecodealliance/wasm-micro-runtime) to run wasm binary in UEFI environment.
 It is similar to CryptoPkg which is a wrapper for openssl.
 
+## Prerequisit:
+
+  Build a standard C file to a wasm file with wasm SDK.
+  
+  1. [wasi-sdk](https://github.com/WebAssembly/wasi-sdk)
+  
+  2. [emsdk](https://emscripten.org/docs/getting_started/downloads.html)
+  
+  3. [rustwasm](https://rustwasm.github.io/)
+
+
 ## Build:
 This repo uses below submodules:
 
@@ -15,7 +26,6 @@ This repo uses below submodules:
 
 ## Run:
 
-  Build a standard C file to a wasm file with wasm SDK, such as [wasi-sdk](https://github.com/WebAssembly/wasi-sdk), [emsdk](https://emscripten.org/docs/getting_started/downloads.html), or [rustwasm](https://rustwasm.github.io/).
   Build WebAssemblyPkg and generate WasmApp.efi.
   Run WasmApp.efi <Demo.wasm> in the UEFI shell.
 
